@@ -4,11 +4,13 @@
 
 ## 插件目录
 
-| 插件 | 用途 | 适用场景 | 源码与发行版 |
-| --- | --- | --- | --- |
-| ✏️ 消息编辑 | 编辑已发送的用户消息，在原会话中截断后续对话并重新生成；保留原有附件 | 修改提示词、修正输入、重新尝试 | [dsh-message-pencil](https://github.com/Stxr/dsh-message-pencil) · [Releases](https://github.com/Stxr/dsh-message-pencil/releases) |
-| 🌿 旁支对话 /side | 在原生右侧栏打开继承上下文的临时旁支，支持转为永久会话与 AI 标题 | 主任务继续运行时追问、探索其他思路 | [dsh-codex-side](https://github.com/Stxr/dsh-codex-side) · [Releases](https://github.com/Stxr/dsh-codex-side/releases) |
-| 🔗 会话跳转桥 | 让本机应用打开 DSH 桌面端指定会话，并确认历史已加载 | 外部工具集成、从换台等应用跳转会话 | [dsh-session-bridge](https://github.com/Stxr/dsh-session-bridge) · [Releases](https://github.com/Stxr/dsh-session-bridge/releases) |
+| 插件 | 当前版本 | 用途 | 适用场景 | 源码与发行版 |
+| --- | --- | --- | --- | --- |
+| ✏️ 消息编辑 | [1.1.3](https://github.com/Stxr/dsh-message-pencil/releases/tag/v1.1.3) | 编辑已发送的用户消息，在原会话中截断后续对话并重新生成；保留原有附件 | 修改提示词、修正输入、重新尝试 | [dsh-message-pencil](https://github.com/Stxr/dsh-message-pencil) · [Releases](https://github.com/Stxr/dsh-message-pencil/releases) |
+| 🌿 旁支对话 /side | [1.4.3](https://github.com/Stxr/dsh-codex-side/releases/tag/v1.4.3) | 在原生右侧栏打开继承上下文的临时旁支，支持转为永久会话与 AI 标题 | 主任务继续运行时追问、探索其他思路 | [dsh-codex-side](https://github.com/Stxr/dsh-codex-side) · [Releases](https://github.com/Stxr/dsh-codex-side/releases) |
+| 🔗 会话跳转桥 | [0.1.1](https://github.com/Stxr/dsh-session-bridge/releases/tag/v0.1.1) | 让本机应用打开 DSH 桌面端指定会话，并确认历史已加载 | 外部工具集成、从换台等应用跳转会话 | [dsh-session-bridge](https://github.com/Stxr/dsh-session-bridge) · [Releases](https://github.com/Stxr/dsh-session-bridge/releases) |
+
+这三个版本统一采用模块化 TypeScript 源码，界面组件按需使用 TSX；运行包已包含编译产物和类型声明。用户安装不需要本地编译，现有功能和安装索引地址保持兼容。
 
 ## 安装
 
@@ -35,6 +37,20 @@
 - **会话跳转桥**：必须安装到 **desktop profile**，安装到 web profile 不会启用桌面跳转。接入协议和就绪检查见[插件说明](https://github.com/Stxr/dsh-session-bridge#readme)。
 
 其他安装方式、重启要求、卸载方法和完整兼容性说明，请查阅各插件 README。
+
+## 开发与源码入口
+
+维护源码放在各仓库的 `src/`，构建和测试脚本放在 `scripts/`。Host 入口负责组装服务和注册命令，Client 入口负责注册界面或桌面连接；两侧共用协议类型。历史兼容、旁支生命周期和桥接鉴权等逻辑分别拆到独立模块。
+
+| 插件 | Host 入口 | Client 入口 | 本地验证 |
+| --- | --- | --- | --- |
+| 消息编辑 | [src/host/index.ts](https://github.com/Stxr/dsh-message-pencil/blob/main/src/host/index.ts) | [src/client/index.tsx](https://github.com/Stxr/dsh-message-pencil/blob/main/src/client/index.tsx) | `pnpm check` |
+| 旁支对话 /side | [src/host/index.ts](https://github.com/Stxr/dsh-codex-side/blob/main/src/host/index.ts) | [src/client/index.tsx](https://github.com/Stxr/dsh-codex-side/blob/main/src/client/index.tsx) | `npm run check` |
+| 会话跳转桥 | [src/host/index.ts](https://github.com/Stxr/dsh-session-bridge/blob/main/src/host/index.ts) | [src/client/index.ts](https://github.com/Stxr/dsh-session-bridge/blob/main/src/client/index.ts) | `pnpm check` |
+
+开发使用 Node.js 24，先按对应仓库 README 安装锁定依赖。验证命令会执行严格类型检查、重新编译和行为回归；运行包通过 `package.json` 的 `exports` 加载编译后的 JavaScript。安装索引的每个版本固定到完整 Git 提交 SHA，不会把已发布版本改指向另一份源码。
+
+各仓库记录自动化和实际 DSH 验收的范围；源码重构通过测试不代表已经重新完成全部桌面现场验收。完整模块说明、构建命令和兼容边界见各插件 README。
 
 ## 相关项目
 
